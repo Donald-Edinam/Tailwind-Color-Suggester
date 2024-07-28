@@ -9,21 +9,23 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onCommand:tailwind-color-suggester.suggestTailwindColor"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "tailwind-color-suggester.helloWorld",
-        "title": "Hello World"
+        "command": "tailwind-color-suggester.suggestTailwindColor",
+        "title": "Tailwind Color Suggester"
       }
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
+    "vscode:prepublish": "npm run clean && npm run build",
+    "build": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
+    "pretest": "npm run lint",
     "lint": "eslint src --ext ts",
     "test": "vscode-test"
   },

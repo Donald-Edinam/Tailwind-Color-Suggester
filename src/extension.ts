@@ -1,26 +1,107 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { loadTailwindColors } from './helper';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
+export type TailwindColorType = { [key: string]: string };
+
+let tailwindColors: TailwindColorType = {};
+
 export function activate(context: vscode.ExtensionContext) {
+	console.log('Extension "tailwind-color-suggester" is now active!');
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "tailwind-color-suggester" is now active!');
+	// Load initial colors
+	updateTailwindColors();
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('tailwind-color-suggester.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from tailwind-color-suggester!');
-	});
+	// Set up file watcher
+	const watcher = vscode.workspace.createFileSystemWatcher('**/tailwind.config.js');
+	watcher.onDidChange(() => updateTailwindColors());
+	watcher.onDidCreate(() => updateTailwindColors());
+	watcher.onDidDelete(() => updateTailwindColors());
+
+	context.subscriptions.push(watcher);
+
+	// Activate hover provider
+	activateHoverProvider(context);
+
+	// Activate completion provider
+	activateCompletionProvider(context);
+
+	// Register a command (you can remove this if you don't need it)
+	let disposable = vscode.commands.registerCommand("tailwind-color-suggester.suggestTailwindColor",
+		function () {
+			vscode.window.showInformationMessage("Hello World from Tailwind!");
+		}
+	);
 
 	context.subscriptions.push(disposable);
 }
 
-// This method is called when your extension is deactivate
-export function deactivate() {}
+
+// Load tailwind colors in variable
+function updateTailwindColors() {
+	const colors = loadTailwindColors();
+	if (colors) {
+		tailwindColors = colors;
+	} else {
+		console.log('Failed to load Tailwind colors');
+		tailwindColors = {};
+	}
+}
+
+// Hover action handler -> This will show the Tailwind color name when hovering over a hex color code
+function activateHoverProvider(context: vscode.ExtensionContext) {
+	console.log("hover function started");
+	const hoverProvider = vscode.languages.registerHoverProvider(
+		['css', 'postcss', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact'],
+		{
+			provideHover(document, position, token) {
+				const range = document.getWordRangeAtPosition(position, /#[0-9A-Fa-f]{6}/);
+				if (range) {
+					const hexColor = document.getText(range);
+					const colorName = Object.entries(tailwindColors).find(([name, hex]) => hex.toLowerCase() === hexColor.toLowerCase());
+					if (colorName) {
+						return new vscode.Hover(`Tailwind color: ${colorName[0]}`);
+					}
+				}
+				return null;
+			}
+		}
+	);
+
+	console.log("hover function activated/finished");
+
+	context.subscriptions.push(hoverProvider);
+}
+
+
+// Suggest Tailwind color names when you start typing a hex color code
+function activateCompletionProvider(context: vscode.ExtensionContext) {
+	const completionProvider = vscode.languages.registerCompletionItemProvider(
+		['css', 'postcss', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact'],
+		{
+			provideCompletionItems(document, position, token, context) {
+				const linePrefix = document.lineAt(position).text.substring(0, position.character);
+
+				// Check if we're inside square brackets and after a '#'
+				if (!/\[#[0-9A-Fa-f]*$/.test(linePrefix)) {
+					return undefined;
+				}
+
+				const typedColor = linePrefix.match(/#([0-9A-Fa-f]*)$/)?.[1] || '';
+
+				return Object.entries(tailwindColors)
+					.filter(([name, hex]) => hex.toLowerCase().startsWith(`#${typedColor.toLowerCase()}`))
+					.map(([name, hex]) => {
+						const item = new vscode.CompletionItem(hex, vscode.CompletionItemKind.Color);
+						item.detail = name;
+						item.documentation = new vscode.MarkdownString(`Tailwind color: \`${name}\``);
+						item.insertText = name;
+						return item;
+					});
+			}
+		},
+	);
+
+	context.subscriptions.push(completionProvider);
+}
+
+export function deactivate() { }
