@@ -49,7 +49,6 @@ function updateTailwindColors() {
 
 // Hover action handler -> This will show the Tailwind color name when hovering over a hex color code
 function activateHoverProvider(context: vscode.ExtensionContext) {
-	console.log("hover function started");
 	const hoverProvider = vscode.languages.registerHoverProvider(
 		['css', 'postcss', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact'],
 		{
@@ -67,8 +66,6 @@ function activateHoverProvider(context: vscode.ExtensionContext) {
 		}
 	);
 
-	console.log("hover function activated/finished");
-
 	context.subscriptions.push(hoverProvider);
 }
 
@@ -81,12 +78,15 @@ function activateCompletionProvider(context: vscode.ExtensionContext) {
 			provideCompletionItems(document, position, token, context) {
 				const linePrefix = document.lineAt(position).text.substring(0, position.character);
 
-				// Check if we're inside square brackets and after a '#'
-				if (!/\[#[0-9A-Fa-f]*$/.test(linePrefix)) {
+				// Match both scenarios: text-[# and text-#
+				const match = linePrefix.match(/(\w+-)?(?:\[)?#([0-9A-Fa-f]*)$/);
+
+				if (!match) {
 					return undefined;
 				}
 
-				const typedColor = linePrefix.match(/#([0-9A-Fa-f]*)$/)?.[1] || '';
+				const prefix = match[1] || '';
+				const typedColor = match[2];
 
 				return Object.entries(tailwindColors)
 					.filter(([name, hex]) => hex.toLowerCase().startsWith(`#${typedColor.toLowerCase()}`))
@@ -94,13 +94,15 @@ function activateCompletionProvider(context: vscode.ExtensionContext) {
 						const item = new vscode.CompletionItem(hex, vscode.CompletionItemKind.Color);
 						item.detail = name;
 						item.documentation = new vscode.MarkdownString(`Tailwind color: \`${name}\``);
-						item.insertText = name;
+
+						// When pressing enter then this will be replaced
+						item.insertText = new vscode.SnippetString(`${"Prefix-"}${name}`);
 						return item;
 					});
 			}
 		},
+		'#', '[', ']', '-'
 	);
-
 	context.subscriptions.push(completionProvider);
 }
 

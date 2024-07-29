@@ -10,7 +10,12 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:tailwind-color-suggester.suggestTailwindColor"
+    "onLanguage:css",
+    "onLanguage:postcss",
+    "onLanguage:javascript",
+    "onLanguage:typescript",
+    "onLanguage:javascriptreact",
+    "onLanguage:typescriptreact"
   ],
   "main": "./out/extension.js",
   "contributes": {
