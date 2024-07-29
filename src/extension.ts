@@ -3,6 +3,11 @@ import { loadTailwindColors } from './helper';
 
 export type TailwindColorType = { [key: string]: string };
 
+// TODO: Optimize it
+// TODO: Implement for mon repos
+// TODO: Should not conflicts with other config files 
+// TODO: Should suggest only for current repo acc. to config file 
+
 let tailwindColors: TailwindColorType = {};
 
 export function activate(context: vscode.ExtensionContext) {
@@ -34,7 +39,6 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(disposable);
 }
-
 
 // Load tailwind colors in variable
 function updateTailwindColors() {
@@ -69,7 +73,7 @@ function activateHoverProvider(context: vscode.ExtensionContext) {
 	context.subscriptions.push(hoverProvider);
 }
 
-
+// FIXME: Need to work on how to remove brackets
 // Suggest Tailwind color names when you start typing a hex color code
 function activateCompletionProvider(context: vscode.ExtensionContext) {
 	const completionProvider = vscode.languages.registerCompletionItemProvider(
@@ -95,8 +99,14 @@ function activateCompletionProvider(context: vscode.ExtensionContext) {
 						item.detail = name;
 						item.documentation = new vscode.MarkdownString(`Tailwind color: \`${name}\``);
 
-						// When pressing enter then this will be replaced
-						item.insertText = new vscode.SnippetString(`${"Prefix-"}${name}`);
+						// When pressing enter then this will be replaced ->> 
+
+						const insertText = name;
+						// const insertText = `${prefix}${name}`;
+						// snippet with prefix (text-) and color name
+						const snippet = new vscode.SnippetString(insertText);
+						item.insertText = snippet;
+
 						return item;
 					});
 			}
