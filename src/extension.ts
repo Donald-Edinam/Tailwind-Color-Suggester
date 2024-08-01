@@ -76,14 +76,15 @@ function activateHoverProvider(context: vscode.ExtensionContext) {
 // FIXME: Need to work on how to remove brackets
 // Suggest Tailwind color names when you start typing a hex color code
 function activateCompletionProvider(context: vscode.ExtensionContext) {
-	const completionProvider = vscode.languages.registerCompletionItemProvider(
+	const provider = vscode.languages.registerCompletionItemProvider(
+		// TODO: MAy be need to change options for trigger like patter "**tailwind.config**"
 		['css', 'postcss', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact'],
 		{
-			provideCompletionItems(document, position, token, context) {
+			provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
+
 				const linePrefix = document.lineAt(position).text.substring(0, position.character);
 
-				// Match both scenarios: text-[# and text-#
-				const match = linePrefix.match(/(\w+-)?(?:\[)?#([0-9A-Fa-f]*)$/);
+				const match = linePrefix.match(/(\w+-)?#([0-9A-Fa-f]*)$/);
 
 				if (!match) {
 					return undefined;
@@ -92,28 +93,25 @@ function activateCompletionProvider(context: vscode.ExtensionContext) {
 				const prefix = match[1] || '';
 				const typedColor = match[2];
 
+				console.log({ tailwindColors });
+
 				return Object.entries(tailwindColors)
 					.filter(([name, hex]) => hex.toLowerCase().startsWith(`#${typedColor.toLowerCase()}`))
 					.map(([name, hex]) => {
-						const item = new vscode.CompletionItem(hex, vscode.CompletionItemKind.Color);
-						item.detail = name;
-						item.documentation = new vscode.MarkdownString(`Tailwind color: \`${name}\``);
-
-						// When pressing enter then this will be replaced ->> 
-
-						const insertText = name;
-						// const insertText = `${prefix}${name}`;
-						// snippet with prefix (text-) and color name
-						const snippet = new vscode.SnippetString(insertText);
-						item.insertText = snippet;
-
-						return item;
+						const completionItem = new vscode.CompletionItem(name, vscode.CompletionItemKind.Color);
+						completionItem.filterText = hex;
+						// This is mainly responsible to insert text 
+						completionItem.insertText = name;
+						completionItem.detail = hex;
+						completionItem.documentation = new vscode.MarkdownString(`Tailwind color: ${name}`);
+						return completionItem;
 					});
-			}
+			},
 		},
-		'#', '[', ']', '-'
+		"#",
 	);
-	context.subscriptions.push(completionProvider);
+	context.subscriptions.push(provider);
 }
+
 
 export function deactivate() { }
