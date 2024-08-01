@@ -1,71 +1,59 @@
-# tailwind-color-suggester README
+# Tailwind Color Suggester
 
-This is the README for your extension "tailwind-color-suggester". After writing up a brief description, we recommend including the following sections.
+**Tailwind Color Suggester** is a VS Code extension designed to enhance your development workflow with Tailwind CSS. It helps you quickly find and use Tailwind CSS color names based on hex codes directly within your code editor.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+- **Color Suggestions**: Suggests Tailwind CSS color names when you start typing a hex color code.
+- **Hover Preview**: Shows Tailwind color names when you hover over a hex color code.
+- **Automatic Updates**: Reflects changes in your `tailwind.config.js` file in real-time.
 
-For example if there is an image subfolder under your extension project workspace:
+## Installation
 
-\!\[feature X\]\(images/feature-x.png\)
+1. **Open VS Code**.
+2. **Go to Extensions** (`Ctrl+Shift+X` or `Cmd+Shift+X` on Mac).
+3. **Search for "Tailwind Color Suggester"**.
+4. **Click Install**.
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+## Usage
 
-## Requirements
+### Color Suggestions
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+When you type a hex color code (e.g., `#ff5733`), the extension will suggest Tailwind color names that match the code.
 
-## Extension Settings
+### Hover Preview
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+Hover over any hex color code in your code to see the corresponding Tailwind color name.
 
-For example:
+## Development
 
-This extension contributes the following settings:
+### Prerequisites
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+- Node.js (>= 14.x)
+- Visual Studio Code
+- VS Code Extension Development Dependencies
 
-## Known Issues
+### Setup
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/HimanshuJain04/Tailwind-Color-Suggester
+   cd tailwind-color-suggester
 
-## Release Notes
+2. **Install Dependencies:**:
+      npm install
 
-Users appreciate release notes as you update your extension.
+3. **Build the Extension:**:
+      npm run build
 
-### 1.0.0
+3. **Run the Extension:**:
+    Press F5 to open a new VS Code window with the extension loaded.
 
-Initial release of ...
 
-### 1.0.1
+## Contact
 
-Fixed issue #.
+For any questions or feedback, please contact:
 
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+**Author**: Himanshudev  
+**Email**: himanshu09.dev@gmail.com  
+**GitHub**: [HimanshuJain04](https://github.com/HimanshuJain04)
