@@ -18,9 +18,18 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Set up file watcher
 	const watcher = vscode.workspace.createFileSystemWatcher('**/tailwind.config.js');
-	watcher.onDidChange(() => updateTailwindColors());
-	watcher.onDidCreate(() => updateTailwindColors());
-	watcher.onDidDelete(() => updateTailwindColors());
+	watcher.onDidChange(() => {
+		console.log('tailwind.config.js changed');
+		updateTailwindColors();
+	});
+	watcher.onDidCreate(() => {
+		console.log('tailwind.config.js created');
+		updateTailwindColors();
+	});
+	watcher.onDidDelete(() => {
+		console.log('tailwind.config.js deleted');
+		updateTailwindColors();
+	});
 
 	context.subscriptions.push(watcher);
 
@@ -45,6 +54,7 @@ function updateTailwindColors() {
 	const colors = loadTailwindColors();
 	if (colors) {
 		tailwindColors = colors;
+		console.log('Updated Tailwind colors:', tailwindColors);
 	} else {
 		console.log('Failed to load Tailwind colors');
 		tailwindColors = {};
